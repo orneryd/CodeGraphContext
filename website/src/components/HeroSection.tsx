@@ -18,7 +18,7 @@ const HeroSection = () => {
   const [forks, setForks] = useState(null);
   const [version, setVersion] = useState("");
   const [copied, setCopied] = useState(false);
-  const [isRemoteMode, setIsRemoteMode] = useState(false);
+  const [isRemoteMode, setIsRemoteMode] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [repoUrl, setRepoUrl] = useState("");
   const [repoToken, setRepoToken] = useState("");
