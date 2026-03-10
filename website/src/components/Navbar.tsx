@@ -31,8 +31,8 @@ const Navbar: React.FC = () => {
   return (
     <nav className="fixed top-3 md:top-6 left-1/2 transform -translate-x-1/2 z-50 w-[94vw] max-w-6xl">
       <div
-        className={`rounded-2xl md:rounded-full backdrop-blur-2xl shadow-2xl border border-white/30 px-4 md:px-8 py-2 md:py-3 transition-all duration-300 ${
-          isOpen ? "rounded-2xl" : "rounded-full md:rounded-full"
+        className={`rounded-2xl md:rounded-full backdrop-blur-2xl shadow-2xl border border-white/30 px-4 md:px-8 py-2 md:py-3 transition-colors duration-300 ${
+          isOpen ? "rounded-2xl" : "md:rounded-full"
         }`}
         style={{
           background: 'linear-gradient(to bottom, hsl(var(--card) / 0.8), hsl(var(--graph-node-1) / 0.45))',

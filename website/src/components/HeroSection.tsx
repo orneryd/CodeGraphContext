@@ -67,7 +67,7 @@ const HeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden overflow-y-hidden">
       {/* Header with Theme Toggle */}
       <div className="absolute top-0 left-0 right-0 z-20 p-4" data-aos="fade-down">
         <div className="container mx-auto flex justify-end">
@@ -88,13 +88,13 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 overflow-hidden">
           
           {/* Left Side: Playground Onboarding */}
           <div className="order-2 lg:order-1" data-aos="fade-right">
             <div 
               className={`
-                relative group flex flex-col items-center justify-center w-full max-w-xl mx-auto h-[450px]
+                relative group flex flex-col items-center justify-center w-full max-w-xl mx-auto min-h-[450px]
                 border-2 border-dashed rounded-[2.5rem] overflow-hidden cursor-pointer
                 transition-all duration-500 hover:scale-[1.015] backdrop-blur-md shadow-2xl
                 ${isDragging
@@ -199,13 +199,13 @@ const HeroSection = () => {
 
           {/* Right Side: Hero Text */}
           <div className="order-1 lg:order-2 text-left" data-aos="fade-left">
-            <Badge variant="secondary" className="mb-6 text-sm font-medium border-purple-500/20 bg-purple-500/10 text-purple-400">
+            <Badge variant="secondary" className="mb-6 mt-4 text-sm font-medium border-purple-500/20 bg-purple-500/10 text-purple-400">
               <div className="w-2 h-2 bg-purple-500 rounded-full mr-2 animate-pulse" />
               Version {version} • MIT License
             </Badge>
 
             <h1
-              className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-white to-purple-400 bg-clip-text text-transparent leading-tight tracking-tight break-words whitespace-normal max-w-full overflow-x-hidden"
+              className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 bg-gradient-to-r from-white via-white to-purple-400 bg-clip-text text-transparent leading-tight tracking-tight break-words whitespace-normal max-w-full overflow-hidden"
               style={{ wordBreak: 'break-word' }}
             >
               CodeGraphContext
