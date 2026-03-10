@@ -80,6 +80,9 @@ class TreeSitterParser:
         elif self.language_name == 'perl':
             from .languages.perl import PerlTreeSitterParser
             self.language_specific_parser = PerlTreeSitterParser(self)
+        elif self.language_name == 'elixir':
+            from .languages.elixir import ElixirTreeSitterParser
+            self.language_specific_parser = ElixirTreeSitterParser(self)
 
 
 
@@ -127,6 +130,8 @@ class GraphBuilder:
             '.dart': TreeSitterParser('dart'),
             '.pl': TreeSitterParser('perl'),
             '.pm': TreeSitterParser('perl'),
+            '.ex': TreeSitterParser('elixir'),
+            '.exs': TreeSitterParser('elixir'),
         }
         self.create_schema()
 
@@ -265,7 +270,13 @@ class GraphBuilder:
         if '.pm' in files_by_lang:
             from .languages import perl as perl_lang_module
             imports_map.update(perl_lang_module.pre_scan_perl(files_by_lang['.pm'], self.parsers['.pm']))
-            
+        if '.ex' in files_by_lang:
+            from .languages import elixir as elixir_lang_module
+            imports_map.update(elixir_lang_module.pre_scan_elixir(files_by_lang['.ex'], self.parsers['.ex']))
+        if '.exs' in files_by_lang:
+            from .languages import elixir as elixir_lang_module
+            imports_map.update(elixir_lang_module.pre_scan_elixir(files_by_lang['.exs'], self.parsers['.exs']))
+
         return imports_map
 
     # Language-agnostic method
