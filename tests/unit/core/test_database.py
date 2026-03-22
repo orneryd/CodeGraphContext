@@ -116,6 +116,15 @@ class TestDatabaseManager:
             assert isinstance(wrapper, Neo4jDriverWrapper)
             assert wrapper._database is None
 
+    def test_validate_config_rejects_http_uri(self, mock_driver):
+        """Test that validate_config rejects HTTP URIs and keeps Bolt/Neo4j only."""
+        valid, error = DatabaseManager.validate_config(
+            "http://localhost:7474", "neo4j", "password"
+        )
+
+        assert valid is False
+        assert "Invalid Neo4j URI format" in error
+
     def test_is_connected_passes_database_to_session(self, mock_driver):
         """Test is_connected() includes database in session kwargs when neo4j_database is set."""
         with patch.dict(os.environ, {
@@ -185,12 +194,10 @@ class TestNeo4jDriverWrapper:
 
         wrapper.close()
         mock_driver.close.assert_called_once()
-
-
 class TestTestConnection:
     """Unit tests for DatabaseManager.test_connection() with database parameter."""
 
-    @patch('neo4j.GraphDatabase')
+    @patch('codegraphcontext.core.database.GraphDatabase')
     @patch('socket.socket')
     def test_test_connection_with_database(self, mock_socket_cls, mock_gdb):
         """Test test_connection() passes database to session when provided."""
@@ -214,7 +221,7 @@ class TestTestConnection:
         assert error is None
         mock_driver.session.assert_called_once_with(database="mydb")
 
-    @patch('neo4j.GraphDatabase')
+    @patch('codegraphcontext.core.database.GraphDatabase')
     @patch('socket.socket')
     def test_test_connection_without_database(self, mock_socket_cls, mock_gdb):
         """Test test_connection() does NOT pass database to session when None."""

@@ -4,6 +4,7 @@ This module provides a thread-safe singleton manager for the Neo4j database conn
 """
 import os
 import re
+import socket
 import threading
 from typing import Optional, Tuple
 from neo4j import GraphDatabase, Driver
@@ -194,8 +195,7 @@ class DatabaseManager:
         """
         try:
             from neo4j import GraphDatabase
-            import socket
-            
+
             # First, test if the host is reachable
             try:
                 # Extract host and port from URI
@@ -205,7 +205,7 @@ class DatabaseManager:
                     port = int(host_port.split(':')[1])
                 else:
                     host = host_port
-                    port = 7687 # Default Neo4j port
+                    port = 7687
                 
                 # Test socket connection
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -224,17 +224,16 @@ class DatabaseManager:
                     )
             except Exception as e:
                 return False, f"Error parsing URI or checking connectivity: {str(e)}"
-            
-            # Now test Neo4j authentication
+
             driver = GraphDatabase.driver(uri, auth=(username, password))
-            
+
             session_kwargs = {}
             if database:
                 session_kwargs['database'] = database # Pass database to session if provided
             with driver.session(**session_kwargs) as session:
                 result = session.run("RETURN 'Connection successful' as status")
                 result.single()
-            
+
             driver.close()
             return True, None
             

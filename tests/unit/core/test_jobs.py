@@ -1,6 +1,6 @@
-
 import pytest
 from codegraphcontext.core.jobs import JobManager, JobStatus
+
 
 class TestJobManager:
     """
@@ -10,7 +10,7 @@ class TestJobManager:
     def test_create_job(self):
         manager = JobManager()
         job_id = manager.create_job("/tmp")
-        
+
         assert job_id is not None
         job = manager.get_job(job_id)
         assert job.status == JobStatus.PENDING
@@ -20,16 +20,22 @@ class TestJobManager:
     def test_update_job_status(self):
         manager = JobManager()
         job_id = manager.create_job("/tmp")
-        
+
         # Update progress (JobInfo has processed_files/total_files)
-        manager.update_job(job_id, status=JobStatus.RUNNING, processed_files=50, total_files=100)
-        
+        manager.update_job(
+            job_id,
+            status=JobStatus.RUNNING,
+            processed_files=50,
+            total_files=100,
+            current_phase="parse",
+        )
+
         job = manager.get_job(job_id)
         assert job.status == JobStatus.RUNNING
         assert job.progress_percentage == 50.0
+        assert job.current_phase == "parse"
 
     def test_job_not_found(self):
         manager = JobManager()
         job = manager.get_job("non_existent_id")
         assert job is None
-

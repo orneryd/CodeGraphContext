@@ -3,6 +3,7 @@
 This module defines the data structures and manager for handling long-running,
 background jobs, such as code indexing.
 """
+
 import uuid
 import threading
 from datetime import datetime, timedelta
@@ -14,11 +15,13 @@ from pathlib import Path
 
 class JobStatus(Enum):
     """Enumeration for the possible statuses of a background job."""
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
     CANCELLED = "cancelled"
+
 
 @dataclass
 class JobInfo:
@@ -26,6 +29,7 @@ class JobInfo:
     A data class to hold all information about a single background job.
     This makes it easy to track the job's progress, status, and results.
     """
+
     job_id: str
     status: JobStatus
     start_time: datetime
@@ -33,9 +37,16 @@ class JobInfo:
     total_files: int = 0
     processed_files: int = 0
     current_file: Optional[str] = None
+    current_phase: Optional[str] = None
+    progress_unit: str = "files"
+    progress_detail: Optional[str] = None
+    current_batch: int = 0
+    total_batches: int = 0
     estimated_duration: Optional[float] = None
     actual_duration: Optional[float] = None
     errors: List[str] = None
+    error_type: Optional[str] = None
+    error_details: Optional[str] = None
     result: Optional[Dict[str, Any]] = None
     path: Optional[str] = None
     is_dependency: bool = False
@@ -62,14 +73,18 @@ class JobInfo:
         remaining_files = self.total_files - self.processed_files
         return remaining_files * avg_time_per_file
 
+
 class JobManager:
     """
     A thread-safe manager for creating, updating, and retrieving information
     about background jobs. It stores job information in memory.
     """
+
     def __init__(self):
         self.jobs: Dict[str, JobInfo] = {}
-        self.lock = threading.Lock() # A lock to ensure thread-safe access to the jobs dictionary.
+        self.lock = (
+            threading.Lock()
+        )  # A lock to ensure thread-safe access to the jobs dictionary.
 
     def create_job(self, path: str, is_dependency: bool = False) -> str:
         """Creates a new job, assigns it a unique ID, and stores it."""
@@ -80,7 +95,7 @@ class JobManager:
                 status=JobStatus.PENDING,
                 start_time=datetime.now(),
                 path=path,
-                is_dependency=is_dependency
+                is_dependency=is_dependency,
             )
         return job_id
 
@@ -107,17 +122,21 @@ class JobManager:
         """Finds the most recent, currently active (pending or running) job for a given path."""
         with self.lock:
             path_obj = Path(path).resolve()
-            
+
             matching_jobs = sorted(
-                [job for job in self.jobs.values() if job.path and Path(job.path).resolve() == path_obj],
+                [
+                    job
+                    for job in self.jobs.values()
+                    if job.path and Path(job.path).resolve() == path_obj
+                ],
                 key=lambda j: j.start_time,
-                reverse=True
+                reverse=True,
             )
 
             for job in matching_jobs:
                 if job.status in [JobStatus.PENDING, JobStatus.RUNNING]:
                     return job
-                    
+
             return None
 
     def cleanup_old_jobs(self, max_age_hours: int = 24):
@@ -125,7 +144,8 @@ class JobManager:
         cutoff_time = datetime.now() - timedelta(hours=max_age_hours)
         with self.lock:
             jobs_to_remove = [
-                job_id for job_id, job in self.jobs.items()
+                job_id
+                for job_id, job in self.jobs.items()
                 if job.end_time and job.end_time < cutoff_time
             ]
             for job_id in jobs_to_remove:
